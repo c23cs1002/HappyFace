@@ -4,8 +4,8 @@ from kivy.lang import Builder  # Import Builder class
 from kivy.uix.boxlayout import BoxLayout
 import time
 
-Builder.load_file('camera.kv')  # Load the external kv file
-
+#Builder.load_file('camera.kv')  # Load the external kv file
+Builder.load_string('''  ''')
 class CameraClick(BoxLayout):
     def capture(self):
         '''
