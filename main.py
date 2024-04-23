@@ -26,7 +26,24 @@ last_picture = ""
 
 
 
+# Function to remove background using rembg
+def remove_background(image_path):
+    with open(image_path, "rb") as f:
+        input_image = f.read()
+    output = rembg.remove(input_image)
+    return output
 
+# Function to add a new background
+def add_background(image_with_alpha, background_image):
+    with Image.open(BytesIO(image_with_alpha)) as img:
+        with Image.open(background_image) as bg:
+            # Resize background to match the size of the foreground image
+            bg = bg.resize(img.size)
+            # Composite images
+            img = img.convert("RGBA")
+            bg = bg.convert("RGBA")
+            result = Image.alpha_composite(bg, img)
+            return result
 
 
 def choose_random_path(directory):
@@ -94,6 +111,77 @@ class Load(Screen):
         image = KivyImage(source="smile.png")
         layout.add_widget(image)
         self.add_widget(layout)
+
+class Memories(Screen):
+    def __init__(self,**kwargs):
+        super(Memories,self).__init__(**kwargs)
+        layout = FloatLayout()
+        self.imagesPath = []
+        for imagePath in os.listdir("undossier/"):
+            if (imagePath.endswith(".jpg")):
+                self.imagesPath.append(imagePath)
+        self.ttl = KivyImage(source="buttonPic/ttl.jpg",pos_hint={'center_x': 0.50, 'center_y':0.9},size_hint=(0.75 , 0.75))
+        self.inSublist = False
+        self.backButton = Button(background_normal="buttonPic/rounded_button.png",size_hint=(0.20, 0.09), pos_hint={'center_x': 0.15, 'center_y':0.08})
+        self.magicButton = Button(background_normal="buttonPic/rmBG.png", background_down="buttonPic/rmBG.png",size_hint=(0.27, 0.15), pos_hint={'center_x': 0.85, 'center_y':0.08})
+        self.left_button = Button(background_normal="buttonPic/arrowL.png",background_down="buttonPic/arrowL.png",size_hint=(0.2, 0.12),pos_hint={'center_x': 0.1, 'center_y':0.5})
+        self.right_button = Button(background_normal="buttonPic/arrowR.png",background_down="buttonPic/arrowR.png",size_hint=(0.2, 0.12), pos_hint={'center_x': 0.9, 'center_y':0.5})
+        self.trash_button = Button(background_normal="buttonPic/trash.png",background_down="buttonPic/trash.png",size_hint=(0.150, 0.092), pos_hint={'center_x': 0.50, 'center_y':0.20})
+        self.left_button.bind(on_press=lambda instance:self.switch_img(-1))
+        self.right_button.bind(on_press=lambda instance:self.switch_img(1))
+        self.trash_button.bind(on_press=lambda instance:self.switch_img(2))
+        self.magicButton.bind(on_press=lambda instance:self.chgBack())
+
+        self.left_button.pos = (100, 100)
+        self.right_button.pos = (100, 100)
+
+        self.m = 0
+
+        self.backButton.bind(on_press=lambda instance: sm.switch_screen(4))
+        self.currentImage = KivyImage(source="undossier/"+self.imagesPath[self.m])
+
+        layout.add_widget(self.currentImage)
+        layout.add_widget(self.left_button)
+        layout.add_widget(self.right_button)
+        layout.add_widget(self.trash_button)
+        layout.add_widget(self.backButton)
+        layout.add_widget(self.magicButton)
+        layout.add_widget(self.ttl)
+
+        self.add_widget(layout)
+
+    def switch_img(self, n):
+        if n == 2:
+            os.remove(self.currentImage.source)
+            self.imagesPath.pop(self.m)
+            n = 1
+        for imagePath in os.listdir("undossier/"):
+            if (imagePath.endswith(".jpg") and imagePath not in self.imagesPath):
+                self.imagesPath.append(imagePath)
+        self.m = (self.m + n)%len(self.imagesPath)
+
+
+        self.currentImage.source = "undossier/" + self.imagesPath[self.m]
+
+    def chgBack(self):
+        imgO, imgB = self.imagesPath[self.m], datetime.now().strftime("Back-%Y-%m-%d--%H-%M-%S.jpg")
+        input_image_path = "undossier/" + imgO
+        output_image_path = "undossier/" + imgB
+        self.imagesPath.append(imgB)
+        choosenString = choose_random_path("backgrounds/")
+        background_image_path = choosenString
+
+        # Remove background
+        removed_background_image = remove_background(input_image_path)
+        # Add new background
+        final_image = add_background(removed_background_image, background_image_path)
+        # Save the final image
+        final_image = final_image.convert("RGB")
+
+        final_image.save(output_image_path)
+
+        self.currentImage.source = output_image_path
+
 
 
 class Detection(Screen):
@@ -213,7 +301,7 @@ class ResultDisplay(Screen):
         self.label = Label(text='Capture saved', font_name='SF-Pro-Display-Medium', size_hint=(1, 0.5), font_size='24sp', bold=True)
         self.label.pos_hint = {'center_x': 0.5, 'center_y': 0.4}
 
-        img = KivyImage(source='rounded_button.png', size_hint=(3,3))
+        img = KivyImage(source='buttonPic/rounded_button2.png', size_hint=(3,3))
         img.size[0] *= 2
         img.size[1] *= 2
         img.pos = (10+240-img.size[1]/2,50)
