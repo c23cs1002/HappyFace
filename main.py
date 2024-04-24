@@ -74,15 +74,18 @@ class SM(App):
 
     def start_app(self, dt):
         self.screenmanager.remove_widget(self.screen0)
+        self.screen1.active = True
         self.screenmanager.add_widget(self.screen1)
 
     def switch_screen(self, n):
         if n == 2:
             self.screenmanager.remove_widget(self.screen1)
+            self.screen1.active = False
             self.screen2.load_image(last_picture)
             self.screenmanager.add_widget(self.screen2)
         elif n == 3:
             self.screenmanager.remove_widget(self.screen1)
+            self.screen1.active = False
             self.screen3.imagesPath = []
             for imagePath in os.listdir("undossier/"):
                 if (imagePath.endswith(".jpg")):
@@ -95,6 +98,7 @@ class SM(App):
             self.screen1.start = None
             self.screen1.last = time.time()
             self.screen1.start_loop()
+            self.screen1.active = True
             self.screenmanager.add_widget(self.screen1)
         else:
             self.screenmanager.remove_widget(self.screen2)
@@ -103,6 +107,7 @@ class SM(App):
             self.screen1.start = None
             self.screen1.last = time.time()
             self.screen1.start_loop()
+            self.screen1.active = True
             self.screenmanager.add_widget(self.screen1)
 
 
@@ -198,6 +203,8 @@ class Detection(Screen):
     def __init__(self, **kwargs):
         super(Detection, self).__init__(**kwargs)
 
+        self.active = False
+
         # Create a box layout for the camera screen
         self.layout = FloatLayout()
 
@@ -273,7 +280,7 @@ class Detection(Screen):
             cropped_gray = gray[y:y + h, x:x + w]
             smiles = self.smile_cascade.detectMultiScale(cropped_gray, 1.8, 20)
 
-            if len(smiles) > 0:
+            if len(smiles) > 0 and self.active:
                 if not self.start:
                     self.start = time.time()
                 self.is_smile_detected = True
@@ -285,7 +292,7 @@ class Detection(Screen):
                     Clock.unschedule(self.TakePic)
                     Clock.unschedule(self.bar_loop)
                     sm.switch_screen(2)
-            elif time.time() - self.last > 0.5:
+            elif time.time() - self.last > 0.5 or not self.active:
                 self.is_smile_detected = False
                 self.start = time.time()
         if len(faces) == 0 and time.time() - self.last > 0.5:
