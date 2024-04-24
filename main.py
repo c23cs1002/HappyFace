@@ -25,13 +25,13 @@ from io import BytesIO
 last_picture = ""
 
 
-
 # Function to remove background using rembg
 def remove_background(image_path):
     with open(image_path, "rb") as f:
         input_image = f.read()
     output = rembg.remove(input_image)
     return output
+
 
 # Function to add a new background
 def add_background(image_with_alpha, background_image):
@@ -58,6 +58,8 @@ def choose_random_path(directory):
 
     # Return the full path of the chosen file
     return os.path.join(directory, random_file)
+
+
 class SM(App):
     def build(self):
         self.screenmanager = ScreenManager()
@@ -67,16 +69,14 @@ class SM(App):
         self.screen3 = Memories(name='echo ACAC')
         Window.size = (400, 640)
         self.screenmanager.add_widget(self.screen0)
-        Clock.schedule_once(self.start_app,5)
+        Clock.schedule_once(self.start_app, 5)
         return self.screenmanager
 
-    def start_app(self,dt):
+    def start_app(self, dt):
         self.screenmanager.remove_widget(self.screen0)
         self.screenmanager.add_widget(self.screen1)
 
-
-
-    def switch_screen(self,n):
+    def switch_screen(self, n):
         if n == 2:
             self.screenmanager.remove_widget(self.screen1)
             self.screen2.load_image(last_picture)
@@ -105,36 +105,44 @@ class SM(App):
             self.screen1.start_loop()
             self.screenmanager.add_widget(self.screen1)
 
+
 sm = SM()
 
 
 class Load(Screen):
-    def __init__(self,**kwargs):
-        super(Load,self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super(Load, self).__init__(**kwargs)
         layout = BoxLayout()
         image = KivyImage(source="smile.png")
         layout.add_widget(image)
         self.add_widget(layout)
 
+
 class Memories(Screen):
-    def __init__(self,**kwargs):
-        super(Memories,self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super(Memories, self).__init__(**kwargs)
         layout = FloatLayout()
         self.imagesPath = []
         for imagePath in os.listdir("undossier/"):
             if (imagePath.endswith(".jpg")):
                 self.imagesPath.append(imagePath)
-        self.ttl = KivyImage(source="buttonPic/ttl.jpg",pos_hint={'center_x': 0.50, 'center_y':0.9},size_hint=(0.75 , 0.75))
+        self.ttl = KivyImage(source="buttonPic/ttl.jpg", pos_hint={'center_x': 0.50, 'center_y': 0.9},
+                             size_hint=(0.75, 0.75))
         self.inSublist = False
-        self.backButton = Button(background_normal="buttonPic/rounded_button.png",size_hint=(0.20, 0.09), pos_hint={'center_x': 0.15, 'center_y':0.08})
-        self.magicButton = Button(background_normal="buttonPic/rmBG.png", background_down="buttonPic/rmBG.png",size_hint=(0.27, 0.15), pos_hint={'center_x': 0.85, 'center_y':0.08})
-        self.left_button = Button(background_normal="buttonPic/arrowL.png",background_down="buttonPic/arrowL.png",size_hint=(0.2, 0.12),pos_hint={'center_x': 0.1, 'center_y':0.5})
-        self.right_button = Button(background_normal="buttonPic/arrowR.png",background_down="buttonPic/arrowR.png",size_hint=(0.2, 0.12), pos_hint={'center_x': 0.9, 'center_y':0.5})
-        self.trash_button = Button(background_normal="buttonPic/trash.png",background_down="buttonPic/trash.png",size_hint=(0.150, 0.092), pos_hint={'center_x': 0.50, 'center_y':0.20})
-        self.left_button.bind(on_press=lambda instance:self.switch_img(-1))
-        self.right_button.bind(on_press=lambda instance:self.switch_img(1))
-        self.trash_button.bind(on_press=lambda instance:self.switch_img(2))
-        self.magicButton.bind(on_press=lambda instance:self.chgBack())
+        self.backButton = Button(background_normal="buttonPic/rounded_button.png", size_hint=(0.20, 0.09),
+                                 pos_hint={'center_x': 0.15, 'center_y': 0.08})
+        self.magicButton = Button(background_normal="buttonPic/rmBG.png", background_down="buttonPic/rmBG.png",
+                                  size_hint=(0.27, 0.15), pos_hint={'center_x': 0.85, 'center_y': 0.08})
+        self.left_button = Button(background_normal="buttonPic/arrowL.png", background_down="buttonPic/arrowL.png",
+                                  size_hint=(0.2, 0.12), pos_hint={'center_x': 0.1, 'center_y': 0.5})
+        self.right_button = Button(background_normal="buttonPic/arrowR.png", background_down="buttonPic/arrowR.png",
+                                   size_hint=(0.2, 0.12), pos_hint={'center_x': 0.9, 'center_y': 0.5})
+        self.trash_button = Button(background_normal="buttonPic/trash.png", background_down="buttonPic/trash.png",
+                                   size_hint=(0.150, 0.092), pos_hint={'center_x': 0.50, 'center_y': 0.20})
+        self.left_button.bind(on_press=lambda instance: self.switch_img(-1))
+        self.right_button.bind(on_press=lambda instance: self.switch_img(1))
+        self.trash_button.bind(on_press=lambda instance: self.switch_img(2))
+        self.magicButton.bind(on_press=lambda instance: self.chgBack())
 
         self.left_button.pos = (100, 100)
         self.right_button.pos = (100, 100)
@@ -142,7 +150,7 @@ class Memories(Screen):
         self.m = 0
 
         self.backButton.bind(on_press=lambda instance: sm.switch_screen(4))
-        self.currentImage = KivyImage(source="undossier/"+self.imagesPath[self.m])
+        self.currentImage = KivyImage(source="undossier/" + self.imagesPath[self.m])
 
         layout.add_widget(self.currentImage)
         layout.add_widget(self.left_button)
@@ -162,8 +170,7 @@ class Memories(Screen):
         for imagePath in os.listdir("undossier/"):
             if (imagePath.endswith(".jpg") and imagePath not in self.imagesPath):
                 self.imagesPath.append(imagePath)
-        self.m = (self.m + n)%len(self.imagesPath)
-
+        self.m = (self.m + n) % len(self.imagesPath)
 
         self.currentImage.source = "undossier/" + self.imagesPath[self.m]
 
@@ -187,9 +194,8 @@ class Memories(Screen):
         self.currentImage.source = output_image_path
 
 
-
 class Detection(Screen):
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super(Detection, self).__init__(**kwargs)
 
         # Create a box layout for the camera screen
@@ -203,7 +209,7 @@ class Detection(Screen):
         self.layout.bind(size=lambda instance, value: setattr(rect, 'size', value))
         self.layout.bind(pos=lambda instance, value: setattr(rect, 'pos', value))
 
-        self.size = (480,640)
+        self.size = (480, 640)
         self.label = Label(text="Smile to take a selfie", font_name='SF-Pro-Display-Medium', font_size='24sp')
         self.label.pos_hint = {'center_x': 0.5, 'center_y': 0.2}
 
@@ -225,9 +231,10 @@ class Detection(Screen):
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.smile_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
 
-        self.memory_button = Button(background_normal = 'buttonPic/macron.png', size_hint=(None, None), size=(100, 100), pos_hint={'center_x': 0.85, 'center_y':0.9})
+        self.memory_button = Button(background_normal='buttonPic/macron.png', size_hint=(None, None), size=(100, 100),
+                                    pos_hint={'center_x': 0.85, 'center_y': 0.9})
         self.layout.add_widget(self.memory_button)
-        self.memory_button.bind(on_press=lambda instance:sm.switch_screen(3))
+        self.memory_button.bind(on_press=lambda instance: sm.switch_screen(3))
 
         self.start = None
         self.last = time.time()
@@ -235,10 +242,9 @@ class Detection(Screen):
         self.video_capture = cv2.VideoCapture(0)
         self.start_loop()
 
-
     def start_loop(self):
         Clock.schedule_interval(self.TakePic, 1.0 / 30.0)
-        Clock.schedule_interval(self.bar_loop, 1.0/60.0)
+        Clock.schedule_interval(self.bar_loop, 1.0 / 60.0)
 
     def bar_loop(self, dt):
         self.layout.canvas.after.clear()
@@ -246,12 +252,12 @@ class Detection(Screen):
             with self.layout.canvas.after:
                 self.label.opacity = 0
                 self.progress_bar.opacity = 1
-                self.progress_bar.value = (time.time() - self.start)*50
+                self.progress_bar.value = (time.time() - self.start) * 50
         else:
             self.label.opacity = 1
             self.progress_bar.opacity = 0
 
-    def TakePic(self,dt):
+    def TakePic(self, dt):
         global last_picture
         ret, frame = self.video_capture.read()
         buf = cv2.flip(frame, 0).tobytes()
@@ -288,7 +294,7 @@ class Detection(Screen):
 
 
 class ResultDisplay(Screen):
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         self.layout = FloatLayout()
 
         with self.layout.canvas.before:
@@ -302,13 +308,14 @@ class ResultDisplay(Screen):
 
         self.size = (480, 640)
 
-        self.label = Label(text='Capture saved', font_name='SF-Pro-Display-Medium', size_hint=(1, 0.5), font_size='24sp', bold=True)
+        self.label = Label(text='Capture saved', font_name='SF-Pro-Display-Medium', size_hint=(1, 0.5),
+                           font_size='24sp', bold=True)
         self.label.pos_hint = {'center_x': 0.5, 'center_y': 0.4}
 
-        img = KivyImage(source='buttonPic/rounded_button.png', size_hint=(3,3))
+        img = KivyImage(source='buttonPic/rounded_button.png', size_hint=(3, 3))
         img.size[0] *= 2
         img.size[1] *= 2
-        img.pos = (10+240-img.size[1]/2,50)
+        img.pos = (10 + 240 - img.size[1] / 2, 50)
         self.image = KivyImage(source=last_picture, size_hint=(1, 1.53))
 
         # Create a Button and set its background to the Image
@@ -316,16 +323,13 @@ class ResultDisplay(Screen):
         self.button.pos = (100, 100)
         self.button.add_widget(img)
 
-
-
-        self.button.bind(on_press=lambda instance:sm.switch_screen(1))
+        self.button.bind(on_press=lambda instance: sm.switch_screen(1))
         self.layout.add_widget(self.button)
         self.layout.add_widget(self.image)
         self.layout.add_widget(self.label)
         self.add_widget(self.layout)
 
-
-    def load_image(self,last_picture):
+    def load_image(self, last_picture):
         image = cv2.imread(last_picture)
 
         image = cv2.flip(image, 0)
@@ -335,10 +339,6 @@ class ResultDisplay(Screen):
         texture.blit_buffer(image.tobytes(), colorfmt='bgr', bufferfmt='ubyte')
 
         self.image.texture = texture
-
-
-
-
 
 
 class SmileDetector(App):
@@ -379,8 +379,9 @@ class SmileDetector(App):
         else:
             self.is_detection_started = True
             self.button.text = 'Stop Detection'
-            #self.start = time.time()
+            # self.start = time.time()
             self.video_capture = cv2.VideoCapture(0)  # Initialize video capture here
+
     def update(self, dt):
         if self.is_detection_started:
             ret, frame = self.video_capture.read()
@@ -425,8 +426,6 @@ class SmileDetector(App):
         self.video_capture.release()
 
 
-
-
 if __name__ == '__main__':
-    #SmileDetector().run()
+    # SmileDetector().run()
     sm.run()
