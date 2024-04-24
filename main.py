@@ -83,6 +83,10 @@ class SM(App):
             self.screenmanager.add_widget(self.screen2)
         elif n == 3:
             self.screenmanager.remove_widget(self.screen1)
+            self.screen3.imagesPath = []
+            for imagePath in os.listdir("undossier/"):
+                if (imagePath.endswith(".jpg")):
+                    self.screen3.imagesPath.append(imagePath)
             self.screenmanager.add_widget(self.screen3)
         elif n == 4:
             self.screenmanager.remove_widget(self.screen3)
