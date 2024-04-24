@@ -22,7 +22,7 @@ from PIL import Image
 import rembg
 from io import BytesIO
 
-last_picture = ""
+last_picture = "caca"
 
 
 # Function to remove background using rembg
