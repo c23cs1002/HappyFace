@@ -301,7 +301,7 @@ class ResultDisplay(Screen):
         self.label = Label(text='Capture saved', font_name='SF-Pro-Display-Medium', size_hint=(1, 0.5), font_size='24sp', bold=True)
         self.label.pos_hint = {'center_x': 0.5, 'center_y': 0.4}
 
-        img = KivyImage(source='buttonPic/rounded_button2.png', size_hint=(3,3))
+        img = KivyImage(source='buttonPic/rounded_button.png', size_hint=(3,3))
         img.size[0] *= 2
         img.size[1] *= 2
         img.pos = (10+240-img.size[1]/2,50)
